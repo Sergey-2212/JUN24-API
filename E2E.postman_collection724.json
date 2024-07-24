@@ -85,11 +85,11 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3000/api/users?_where=(email,eq,{{NewStudentEmail}})",
+					"raw": "localhost:3001/api/users?_where=(email,eq,{{NewStudentEmail}})",
 					"host": [
 						"localhost"
 					],
-					"port": "3000",
+					"port": "3001",
 					"path": [
 						"api",
 						"users"
