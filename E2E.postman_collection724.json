@@ -45,7 +45,7 @@
 			"response": []
 		},
 		{
-			"name": "/localhost:3000  - Get activationCode after registration",
+			"name": "/localhost:3001  - Get activationCode after registration",
 			"event": [
 				{
 					"listen": "test",
