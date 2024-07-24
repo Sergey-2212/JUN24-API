@@ -1,0 +1,696 @@
+{
+	"info": {
+		"_postman_id": "0aca646a-29c5-4c8a-b7ad-2bc503591679",
+		"name": "E2E",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "33442314"
+	},
+	"item": [
+		{
+			"name": "/sign-up - [S] Register new user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Body matches string\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"User was created\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"{{NewStudentEmail}}\",\r\n  \"name\": \"Jon SuperSnow\",\r\n  \"group\": \"API\",\r\n  \"password\": \"{{NewStudentPassword}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{askUrl}}/sign-up"
+			},
+			"response": []
+		},
+		{
+			"name": "/localhost:3000  - Get activationCode after registration",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Your test name\", function () {\r",
+							"    var jsonData = pm.response.json()[0];\r",
+							"    pm.expect(jsonData.active).to.eql(0);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"NewStudentId\", pm.response.json()[0].id);\r",
+							"pm.environment.set(\"activationCode\", pm.response.json()[0].activationCode);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/users?_where=(email,eq,{{NewStudentEmail}})",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "_where",
+							"value": "(email,eq,{{NewStudentEmail}})"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/activate/userId/activationCode - Activate the user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body matches string - User was activated\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"User was activated\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{askUrl}}/activate/{{NewStudentId}}/{{activationCode}}"
+			},
+			"response": []
+		},
+		{
+			"name": "/sign-in [S] Sign-in",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							"",
+							"pm.test(\"The role is STUDENT\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    console.log(jsonData.user.role);",
+							"    pm.expect(jsonData.user.role).to.eql(\"STUDENT\");",
+							"});",
+							"",
+							"    var jsonData = pm.response.json();",
+							"    console.log(\"This is my jsonData variable\", jsonData);",
+							"    console.log(\"This is my token\", jsonData.token);",
+							"    pm.environment.set(\"[S]token\", jsonData.token);",
+							"    ",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{NewStudentEmail}}\",\n  \"password\": \"{{NewStudentPassword}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{askUrl}}/sign-in",
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "/sign-in [T] Sign-in",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							"",
+							"pm.test(\"The role is TEACHER\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    console.log(jsonData.user.role);",
+							"    pm.expect(jsonData.user.role).to.eql(\"TEACHER\");",
+							"});",
+							"",
+							"pm.test(\"Set token\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    console.log(\"This is my jsonData variable\", jsonData);",
+							"    console.log(\"This is my token\", jsonData.token);",
+							"    pm.environment.set(\"[T]token\", jsonData.token);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{[T]login}}\",\n  \"password\": \"{{[T]password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{askUrl}}/sign-in",
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "/quiz - [T]Create_new_quiz_200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							"",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.environment.set(\"QuizId\", jsonData.id);",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{[T]token}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"APITest Quiz\",\n  \"totalScore\": 18,\n  \"passingPercentage\": 75,\n  \"showStopperQuestion\": 2,\n  \"questions\": [\n    {\n      \"type\": \"TEXTUAL\",\n      \"question\": \"What is your name?\",\n      \"score\": 5\n    },\n    {\n      \"type\": \"SINGLE_CHOICE\",\n      \"question\": \"Which city is city largest in California?\",\n      \"score\": 7,\n      \"answer\": 2,\n      \"hasOtherOption\": false,\n      \"options\": [\n        \"San Francisco\",\n        \"Sacramento\",\n        \"Los Angeles\",\n        \"Redding\"\n      ]\n    },\n    {\n      \"type\": \"MULTIPLE_CHOICE\",\n      \"question\": \"Who was apple founded by?\",\n      \"score\": 6,\n      \"answers\": [\n        0,\n        1,\n        2\n      ],\n      \"hasOtherOption\": true,\n      \"options\": [\n        \"Steve Jobs\",\n        \"Steve Wozniak\",\n        \"Ronald Wayne\",\n        \"Ronald Reagan\"\n      ]\n    }\n  ]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{askUrl}}/quiz",
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "/quiz - [T]Update quiz 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful PUT request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+							"});",
+							"",
+							"pm.test(\"Id number checking\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"id\")",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{[T]token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Serg APITest Quiz\",\n  \"totalScore\": 18,\n  \"passingPercentage\": 65,\n  \"showStopperQuestion\": 2,\n  \"questions\": [\n    {\n      \"type\": \"TEXTUAL\",\n      \"question\": \"What is your name?\",\n      \"score\": 5\n    },\n    {\n      \"type\": \"SINGLE_CHOICE\",\n      \"question\": \"Which city is city largest in California?\",\n      \"score\": 7,\n      \"answer\": 2,\n      \"hasOtherOption\": false,\n      \"options\": [\n        \"San Francisco\",\n        \"Sacramento\",\n        \"Los Angeles\",\n        \"Lynn\"\n      ]\n    },\n    {\n      \"type\": \"MULTIPLE_CHOICE\",\n      \"question\": \"Who was apple founded by?\",\n      \"score\": 6,\n      \"answers\": [\n        0,\n        1,\n        2\n      ],\n      \"hasOtherOption\": true,\n      \"options\": [\n        \"Steve Jobs\",\n        \"Steve Wozniak\",\n        \"Ronald Wayne\",\n        \"Ronald Reagan\"\n      ]\n    }\n  ],\n  \"id\": {{QuizId}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{askUrl}}/quiz",
+				"description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "/quizzes - [T]Get_quizzes_200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"MULTIPLE_CHOICE\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{[T]token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{askUrl}}/quizzes",
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "/assignment - [T]Create assignment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Assignee Id is correct\", function(){\r",
+							"    pm.expect(pm.response.json()[0].userId).to.eql(pm.environment.get(\"NewStudentId\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Quiz Id is correct\", function () {\r",
+							"    pm.expect(pm.response.json()).to.be.an('array');\r",
+							"    pm.response.json().forEach((assignment) => {\r",
+							"     pm.expect(assignment.quiz).to.be.an('object');\r",
+							"     pm.expect(assignment.quiz).to.have.property('id').that.is.a('number');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Assignment's status is ASSIGNED\", function () {\r",
+							"     var responseJSON = pm.response.json();\r",
+							"     pm.expect(responseJSON).to.be.an('array');\r",
+							"     responseJSON.forEach((assignment) => {\r",
+							"            pm.expect(assignment).to.have.property('status', 'ASSIGNED');\r",
+							"     });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Assignment's result is PENDING\", function () {\r",
+							"     var responseJSON = pm.response.json();\r",
+							"     pm.expect(responseJSON).to.be.an('array');\r",
+							"     responseJSON.forEach((assignment) => {\r",
+							"            pm.expect(assignment).to.have.property('result', 'PENDING');\r",
+							"     });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"AssignmentId\", pm.response.json()[0].id);\r",
+							"\r",
+							"// console.log(pm.response.json()[0].userId);\r",
+							"// console.log(pm.response.json()[0].quiz.id);\r",
+							"// console.log(pm.response.json()[0].status);\r",
+							"// console.log(pm.response.json()[0].result);\r",
+							"// console.log(pm.response.json()[0].gradedBy);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{[T]token}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"quizId\": {{QuizId}},\r\n  \"userIds\": [{{NewStudentId}}]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{askUrl}}/assignment"
+			},
+			"response": []
+		},
+		{
+			"name": "/assignments - [T]List of assignments",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Body includes Assignment Id\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"AssignmentId\"));\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{[T]token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{askUrl}}/assignments"
+			},
+			"response": []
+		},
+		{
+			"name": "/my-assignments  - [S]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Body include Assignment Id\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"AssignmentId\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{[S]token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{askUrl}}/my-assignments"
+			},
+			"response": []
+		},
+		{
+			"name": "/submit-assignment - [S]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Assignment's status is GRADED\", function () {\r",
+							"     var responseJSON = pm.response.json();\r",
+							"     pm.expect(responseJSON).to.be.an('array');\r",
+							"     responseJSON.forEach((assignment) => {\r",
+							"            pm.expect(assignment).to.have.property('status', 'GRADED');\r",
+							"     });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Assignment's result is PASSED\", function () {\r",
+							"     var responseJSON = pm.response.json();\r",
+							"     pm.expect(responseJSON).to.be.an('array');\r",
+							"     responseJSON.forEach((assignment) => {\r",
+							"            pm.expect(assignment).to.have.property('result', 'PASSED');\r",
+							"     });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Graded by is AUTOMATIC\", function () {\r",
+							"     var responseJSON = pm.response.json();\r",
+							"     pm.expect(responseJSON).to.be.an('array');\r",
+							"     responseJSON.forEach((assignment) => {\r",
+							"            pm.expect(assignment).to.have.property('gradedBy', 'AUTOMATIC');\r",
+							"     });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Quiz Id is correct\", function () {\r",
+							"    var jsonData = pm.response.json()[0];\r",
+							"    pm.expect(jsonData.quiz.id).to.eql(pm.environment.get(\"QuizId\"));\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{[S]token}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"assignmentId\": {{AssignmentId}},\r\n    \"answers\": [\r\n        {\r\n            \"textAnswer\": \"Correct\",\r\n            \"answer\": null\r\n        },\r\n        {\r\n            \"textAnswer\": \"\",\r\n            \"answer\": 2\r\n        },\r\n        {\r\n            \"textAnswer\": \"\",\r\n            \"answer\": [\r\n                0,\r\n                1,\r\n                2\r\n            ]\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{askUrl}}/submit-assignment"
+			},
+			"response": []
+		},
+		{
+			"name": "/assignment/:id - [T}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{[T]token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"summary\": \"Summary from teacher\",\r\n  \"result\": \"PASSED\",\r\n  \"grades\": [\r\n    {\r\n      \"comment\": \"Teacher comment\",\r\n      \"additionalScore\": 5\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{askUrl}}/assignment/{{AssignmentId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "/quiz/:id - [T]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"User was deleted message\", function () {\r",
+							"    pm.expect(pm.response.json()).to.be.an('object');\r",
+							"    pm.expect(pm.response.json().status).to.eql(\"success\");\r",
+							"    pm.expect(pm.response.json().message).to.eql(\"Quiz was deleted\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{[T]token}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": "{{askUrl}}/quiz/{{QuizId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "/users/:userId - [T]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"User was deleted message\", function () {\r",
+							"    pm.expect(pm.response.json()).to.be.an('object');\r",
+							"    pm.expect(pm.response.json().status).to.eql(\"success\");\r",
+							"    pm.expect(pm.response.json().message).to.eql(\"User was deleted\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{[T]token}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": "{{askUrl}}/users/{{NewStudentId}}"
+			},
+			"response": []
+		}
+	]
+}
